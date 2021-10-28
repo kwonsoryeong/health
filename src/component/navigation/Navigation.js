@@ -137,6 +137,9 @@ class Navigation extends Component {
                             <span className={styles.navitem}>
                                 {userinfo.manager_name}님
                             </span>
+                            <span className={styles.navitem}>
+                                코드: {userinfo.fitness_no? userinfo.fitness_no.toString(16) : ""}
+                            </span>
                         </Nav.Item>
                         <Nav.Item>
                             <button className='btnSolid' onClick={this.handleLogout}>
