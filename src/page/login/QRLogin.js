@@ -8,7 +8,6 @@ import '../../styles/login/QRLogin.css';
 
 import QrReader from 'react-qr-scanner';
 import {SERVER_URL} from '../../const/settings';
-import QRCode from "react-qr-code";
 
 
 const ip = SERVER_URL;
@@ -34,7 +33,7 @@ class QRLogin extends Component {
             return;
         } else {this.setState({is_checking: true})}
         try {
-            fetch(ip+'/customerenter?token='+data.text,
+            fetch(ip+'/customerenter?token='+data.text+'&fitness_no='+this.state.fitness_no,
             {
                 method: 'GET',
                 credential: 'include',
@@ -123,17 +122,6 @@ class QRLogin extends Component {
                     onError={this.handleError}
                     onScan={this.handleScan}
                     />
-                </div>
-                <div className='container'>
-                    <div>
-                    <h1>
-                        테스트를 위한 QR입니다.
-                    </h1>
-                    </div>
-                    
-                    <div>
-                        <QRCode value={this.state.token} />
-                    </div>
                 </div>
                 <div className='footer'>
                     <Footer />

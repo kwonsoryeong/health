@@ -1,10 +1,11 @@
-import React,{ Component } from 'react';
+import React,{ Component, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '../../component/navigation/Navigation';
 import Header from '../../component/header/Header';
 import Footer from '../../component/footer/Footer';
 import { connect } from 'react-redux';
 import {getStatusRequest} from '../../action/authentication';
+import {Toast} from 'react-bootstrap';
 import '../../styles/home/home.css';
 
 import {SERVER_URL} from '../../const/settings';
@@ -17,6 +18,34 @@ var moment = require('moment');
 
 moment.tz.setDefault("Asia/Seoul");
 
+const AlertItem =({value, callbackOnClick}) => {
+    const [show, setShow] = useState(!value.confirm);
+
+    const handleClose = (event) => {
+        setShow(false);
+        fetch(ip+'/alerts', {
+            method: "PUT",
+            headers: {
+              'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                fitness_no: value.fitness_no,
+                member_no: value.member_no,
+            })
+        })
+        .then(response => console.log(response))
+    }
+
+    return (
+    <Toast show={show} onClose={handleClose}>
+        <Toast.Header>
+        <strong className="mr-auto">호출</strong>
+        <small>{moment(value.createdAt).add(9, 'hours').format("hh:mm:ss")}</small>
+        </Toast.Header>
+        <Toast.Body>{value.text}</Toast.Body>
+        </Toast>)
+}
+
 class Home extends Component {
     constructor(props) {
         super(props);
@@ -25,7 +54,9 @@ class Home extends Component {
             todayCustomer:0,
             monthSales:0,
             todaySales:0,
-            admin:this.props.userinfo.manager_name
+            admin:this.props.userinfo.manager_name,
+            alert_items: [],
+            alert_timer: null,
         }
         this.cusFetch();
     }
@@ -149,6 +180,22 @@ class Home extends Component {
         .then(res => {
             this.setState({todayCustomer:res.length})
         })
+
+        // 알람 불러오기
+        fetch(ip+'/alerts?fitness_no='+this.props.userinfo.fitness_no, {
+            method: "GET",
+            headers: {
+              'Content-type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(res => {
+            this.setState({
+                alert_items: res.map(value => {
+                    return <AlertItem value={value} key={value.id}/>
+                })
+            })
+        })
     }
 
     fommat=(num)=>{
@@ -198,6 +245,13 @@ class Home extends Component {
                 </div>{/*.localNavigation */}
             </div>{/*.header */}
             <div className='container'>
+            <div
+            style={{
+                position: "absolute", left: "50%", transform: "translateX(-50%)"
+            }}
+            >
+                {this.state.alert_items}
+                </div>
                 <div className='mainVisual'>
                     메인 이미지
                 </div>
