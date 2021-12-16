@@ -61,6 +61,12 @@ class Home extends Component {
         this.cusFetch();
     }
 
+    componentWillUnmount() {
+        if (this.state.alert_timer) {
+            
+        }
+    }
+
     goLogin = () => {
         this.props.history.push("/");
     }
@@ -182,20 +188,26 @@ class Home extends Component {
         })
 
         // 알람 불러오기
-        fetch(ip+'/alerts?fitness_no='+this.props.userinfo.fitness_no, {
-            method: "GET",
-            headers: {
-              'Content-type': 'application/json'
-          }
-        })
-        .then(response => response.json())
-        .then(res => {
-            this.setState({
-                alert_items: res.map(value => {
-                    return <AlertItem value={value} key={value.id}/>
+        setInterval(
+            () => {
+                // 알람 불러오기
+                fetch(ip+'/alerts?fitness_no='+this.props.userinfo.fitness_no, {
+                    method: "GET",
+                    headers: {
+                    'Content-type': 'application/json'
+                }
                 })
-            })
-        })
+                .then(response => response.json())
+                .then(res => {
+                    this.setState({
+                        alert_items: res.map(value => {
+                            return <AlertItem value={value} key={value.id}/>
+                        })
+                    })
+                })
+            },
+            1000
+        )
     }
 
     fommat=(num)=>{
