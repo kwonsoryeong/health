@@ -63,7 +63,7 @@ class Home extends Component {
 
     componentWillUnmount() {
         if (this.state.alert_timer) {
-            
+            clearInterval(this.state.alert_timer)
         }
     }
 
@@ -188,26 +188,29 @@ class Home extends Component {
         })
 
         // 알람 불러오기
-        setInterval(
-            () => {
-                // 알람 불러오기
-                fetch(ip+'/alerts?fitness_no='+this.props.userinfo.fitness_no, {
-                    method: "GET",
-                    headers: {
-                    'Content-type': 'application/json'
-                }
-                })
-                .then(response => response.json())
-                .then(res => {
-                    this.setState({
-                        alert_items: res.map(value => {
-                            return <AlertItem value={value} key={value.id}/>
+        this.setState({
+            alert_timer: setInterval(
+                () => {
+                    // 알람 불러오기
+                    fetch(ip+'/alerts?fitness_no='+this.props.userinfo.fitness_no, {
+                        method: "GET",
+                        headers: {
+                        'Content-type': 'application/json'
+                    }
+                    })
+                    .then(response => response.json())
+                    .then(res => {
+                        this.setState({
+                            alert_items: res.map(value => {
+                                return <AlertItem value={value} key={value.id}/>
+                            })
                         })
                     })
-                })
-            },
-            1000
-        )
+                },
+                1000
+            )
+        })
+        
     }
 
     fommat=(num)=>{
