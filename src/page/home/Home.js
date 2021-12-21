@@ -43,7 +43,7 @@ const AlertItem =({value, callbackOnClick}) => {
         <small>{moment(value.createdAt).add(9, 'hours').format("hh:mm:ss")}</small>
         </Toast.Header>
         <Toast.Body>{value.text}</Toast.Body>
-        </Toast>)
+    </Toast>)
 }
 
 class Home extends Component {
